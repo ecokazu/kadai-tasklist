@@ -5,6 +5,7 @@
 <h1>メッセージの新規投稿</h1>
 
 
+
 {{--モデルインスタンス名,連想配列routeで実行先を指定--}}
 {!! Form::model($tasklist,['route'=>'tasklist.store'])!!}
 
