@@ -11,8 +11,8 @@
     @foreach($tasklists as $tasklist)
     
     {{-- link_to_route(リンク先, リンクのアンカーテキスト, リンク先urlに該当のid --}}
-        <li>{{$tasklist->id}}:{!! link_to_route('tasklist.show','詳細', ['id' => $tasklist->id]) !!}:{{ $tasklist->content }}
-        </li>
+        <li>{{$tasklist->id}}:{!! link_to_route('task.show','詳細', ['id' => $tasklist->id]) !!}:{{ $tasklist->content }}
+        ＞{{ $tasklist->status }}</li>
         
         
     @endforeach
@@ -24,6 +24,6 @@
 
 @endif
 
-{!! link_to_route('tasklist.create','新規メッセージ') !!}
+{!! link_to_route('task.create','新規メッセージ') !!}
 
 @endsection
