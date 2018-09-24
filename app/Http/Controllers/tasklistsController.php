@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Tasklist;
+use App\User;
 
 class tasklistsController extends Controller
 {
@@ -14,16 +15,53 @@ class tasklistsController extends Controller
      */
     public function index()
     {
-        //
-        $tasklists=Tasklist::all();
-        return view('tasklists.index',['tasklists'=>$tasklists]);
+        //ログイン認証判定
+        
+         if (\Auth::check()) {
+            $user = \Auth::user();
+            $tasklists = $user->tasklists()->orderBy('created_at', 'desc')->paginate(10);
+
+            $data = [
+                'user' => $user,
+                'tasklists' => $tasklists,
+            ];
+            //$data += $this->counts($user);
+            
+       
+        return view('tasklists.index',$data);
+         }else{
+             
+             return view('welcome');
+         }
+        
+        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function alltask()
+    {
+            $tasklists = Tasklist::paginate(5);
+            $users = User::all();
+            $data = [
+                'user' => $users,
+                'tasklists' => $tasklists,
+            ];
+            
+            
+            if (\Auth::check()) {
+            $authuser = \Auth::user();
+            
+            $data +=['authuser' =>$authuser->id,
+            ];
+            }
+            
+            
+            
+            return view('tasklists.alltask',$data);
+    }
+     
+     
+     
+     
     public function create()
     {
         //
@@ -43,12 +81,16 @@ class tasklistsController extends Controller
         //
         $this->validate($request,['status' => 'required|max:10',
         'content'=>'required|max:191',
+        'title'=>'required|max:191',
         ]);
         
-        $tasklist= new Tasklist;
-        $tasklist->status = $request->status;
-        $tasklist->content=$request->content;
-        $tasklist->save();
+      
+        
+        $request->user()->tasklists()->create([
+            'status'=> $request->status,
+            'content' => $request->content,
+            'title'=>$request->title,
+            ]);
         
         return redirect('/');
         
@@ -64,13 +106,22 @@ class tasklistsController extends Controller
     public function show($id)
     {
         //
+    
         $tasklist = Tasklist::find($id);
-
-        return view('tasklists.show', [
-            'tasklist' => $tasklist,
-        ]);
+     
+              if (empty($task)) {
+            return redirect('/');
+            }
+            
+            if (\Auth::id() === $tasklist->user_id) {
+    
+                return view('tasklists.show', [
+                    'tasklist' => $tasklist,
+                ]);
+            
+            }
         
-        
+        return redirect('/');
         
         
     }
@@ -86,7 +137,16 @@ class tasklistsController extends Controller
         //
         $tasklist=Tasklist::find($id);
         
-        return view('tasklists.edit',['tasklist'=>$tasklist,]);
+        if (\Auth::id() === $tasklist->user_id) {
+
+            return view('tasklists.edit',[
+            'tasklist'=>$tasklist,]);
+            
+        
+        }
+        return redirect('/');
+        
+        
         
         
     }
@@ -105,6 +165,7 @@ class tasklistsController extends Controller
         'content'=>'required|max:191',]);
         
         $tasklist=Tasklist::find($id);
+        $tasklist->title = $request->title;
         $tasklist->status = $request->status;
         $tasklist->content = $request->content;
         $tasklist->save();
@@ -121,7 +182,15 @@ class tasklistsController extends Controller
     {
         //
         $tasklist=Tasklist::find($id);
-        $tasklist->delete();
-        return redirect('/');
+        
+        if (\Auth::id() === $tasklist->user_id) {
+
+            $tasklist->delete();
+
+            
+        
+        }
+        
+                return redirect('/');
     }
 }

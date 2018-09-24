@@ -2,16 +2,21 @@
 
 @section('content')
 
-<!-- ここにページ毎のコンテンツを書く -->
+
 
 <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-lg-offset-3 col-lg-6">
-<h1>{{ $tasklist->id }}のメッセージの編集ページ</h1>
+<h1>{{ $tasklist->id }}のタスクの編集ページ</h1>
 
 
 {!! Form::model($tasklist, ['route' => ['task.update', $tasklist->id], 'method' => 'put']) !!}
 
 <div class="form-group">
-        {!! Form::label('content', 'メッセージ:') !!}
+        {!! Form::label('title', 'タスク名:') !!}
+        {!! Form::text('title',null, ['class' => 'form-control']) !!}
+</div>
+
+<div class="form-group">
+        {!! Form::label('content', '備考:') !!}
         {!! Form::text('content',null, ['class' => 'form-control']) !!}
 </div>
 

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddTitleToTasklistsTable extends Migration
+class AddTitleForeignUserId extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,9 @@ class AddTitleToTasklistsTable extends Migration
     {
         Schema::table('tasklists', function (Blueprint $table) {
             //
-            $table->string('status',10);
+            $table->string('title');
+             $table->integer('user_id')->unsigned()->index();
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -28,8 +30,8 @@ class AddTitleToTasklistsTable extends Migration
     {
         Schema::table('tasklists', function (Blueprint $table) {
             //
-           
-             $table->dropColumn('status');
+            $table->dropColumn('title');
+            $table->dropColumn('user_id');
         });
     }
 }
